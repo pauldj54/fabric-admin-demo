@@ -19,7 +19,7 @@ The sizing queries do not modify or refresh the source models, but XMLA connecti
 
 **Prerequisites:** PowerShell 7 on Windows, the `MicrosoftPowerBIMgmt` and `SqlServer` (22.0 or later) modules, and a Fabric administrator account for the script's organization-scoped inventory calls.
 
-1. Save [Export-SemanticModelSizes.ps1](Export-SemanticModelSizes.ps1) and [Invoke-DiscoveryRequest.ps1](Invoke-DiscoveryRequest.ps1) in the same folder. If the modules are missing, install them from PowerShell 7:
+1. Save [Export-SemanticModelSizes.ps1](discovery/Export-SemanticModelSizes.ps1) and [Invoke-DiscoveryRequest.ps1](discovery/Invoke-DiscoveryRequest.ps1) in the same folder. If the modules are missing, install them from PowerShell 7:
 
    ```powershell
    Install-Module MicrosoftPowerBIMgmt -Scope CurrentUser
@@ -48,7 +48,7 @@ The script rejects missing or inactive workspaces and does not have a model-name
 
 **Prerequisites:** Access to create or import and run a PySpark notebook in a Fabric workspace on an active capacity. The notebook installs `semantic-link-labs==0.14.1`; your environment must allow that installation. For saved results, use an existing Lakehouse in the notebook's workspace that you can write to.
 
-1. Import [Semantic Model Sizing Pilot.ipynb](Semantic%20Model%20Sizing%20Pilot.ipynb) into your Fabric workspace.
+1. Import [Semantic Model Sizing Pilot.ipynb](discovery/Semantic%20Model%20Sizing%20Pilot.ipynb) into your Fabric workspace.
 2. In the **configuration** cell, replace the sample workspace names with your own selection. Here is an ID-based example; keep the existing exclusion settings and add any tenant-specific admin workspaces or system models to them:
 
    ```python
