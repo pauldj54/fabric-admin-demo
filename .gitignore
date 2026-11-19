@@ -1,0 +1,17 @@
+# CSV and Excel files
+*.[cC][sS][vV]
+*.[tT][sS][vV]
+*.[xX][lL][sS]
+*.[xX][lL][sS][xX]
+*.[xX][lL][sS][mM]
+*.[xX][lL][sS][bB]
+*.[xX][lL][tT]
+*.[xX][lL][tT][xX]
+*.[xX][lL][tT][mM]
+*.[xX][lL][aA]
+*.[xX][lL][aA][mM]
+*.[oO][dD][sS]
+
+# Generated discovery reports
+PowerBI-Discovery-Metadata-Scan.json
+PowerBI-Discovery-DatasetDetails.jsonl
