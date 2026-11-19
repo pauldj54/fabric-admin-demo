@@ -19,14 +19,29 @@ The sizing queries do not modify or refresh the source models, but XMLA connecti
 
 **Prerequisites:** PowerShell 7 on Windows, the `MicrosoftPowerBIMgmt` and `SqlServer` (22.0 or later) modules, and a Fabric administrator account for the script's organization-scoped inventory calls.
 
-1. Save [Export-SemanticModelSizes.ps1](discovery/Export-SemanticModelSizes.ps1) and [Invoke-DiscoveryRequest.ps1](discovery/Invoke-DiscoveryRequest.ps1) in the same folder. If the modules are missing, install them from PowerShell 7:
+1. Keep [PowerBI_Discovery_P_SKU.ps1](discovery/PowerBI_Discovery_P_SKU.ps1), [Export-SemanticModelSizes.ps1](discovery/Export-SemanticModelSizes.ps1), and [Invoke-DiscoveryRequest.ps1](discovery/Invoke-DiscoveryRequest.ps1) together in the `discovery` folder. If the modules are missing, install them from PowerShell 7:
 
    ```powershell
    Install-Module MicrosoftPowerBIMgmt -Scope CurrentUser
    Install-Module SqlServer -MinimumVersion 22.0 -Scope CurrentUser
    ```
 
-2. In that folder, create `XXXXWorkspacesT1.csv` with the header `WorkspaceId` and one approved workspace GUID per line. Replace the illustrative IDs below with your own. Creating this file directly limits the scan to your list; you do not need to run tenant-wide discovery first.
+2. **Discover workspaces first.** From the `discovery` folder, run the discovery script and sign in to the correct tenant:
+
+   ```powershell
+   .\PowerBI_Discovery_P_SKU.ps1
+   ```
+
+   The script creates two files:
+
+   | File | Purpose |
+   |---|---|
+   | `PowerBI-Discovery-Report-Active.csv` | Look up workspace names (`WorkspaceName`) and IDs (`WorkspaceId`). |
+   | `XXXXWorkspacesT1.csv` | ID-only input for the sizing script. Discovery regenerates this file each time it runs. |
+
+   Discovery defaults to active dedicated-capacity workspaces. Use `-IncludeSharedCapacity` if you also need shared-capacity workspaces in the inventory; this does not enable XMLA sizing on shared capacity.
+
+3. **Choose which workspaces to size.** Use the names in `PowerBI-Discovery-Report-Active.csv` to look up the IDs of your approved workspaces. Edit the generated `XXXXWorkspacesT1.csv` next to the scripts so it contains **only** those IDs. Leave out personal, admin, and system workspaces. Keep the `WorkspaceId` header and one GUID per line; do not copy the full report or add a name column. If you already have the approved IDs, you can skip discovery and create this file directly:
 
    ```csv
    WorkspaceId
@@ -34,13 +49,13 @@ The sizing queries do not modify or refresh the source models, but XMLA connecti
    22222222-2222-4222-8222-222222222222
    ```
 
-3. Run the exporter from that folder and sign in to the correct tenant when prompted. To test a single workspace first, pass `-WorkspaceId` with a GUID already in the CSV. Omit it to run the full list.
+4. **Run the sizing export.** From the same folder, run the exporter and sign in when prompted. It scans only the IDs in your curated `XXXXWorkspacesT1.csv`. To test a single workspace first, pass `-WorkspaceId` with a GUID already in the CSV.
 
    ```powershell
    .\Export-SemanticModelSizes.ps1
    ```
 
-4. Open `PowerBI-Discovery-SemanticModelSizes.csv` in the script folder (the default separator is `;`). Filter to `SizeStatus = Estimated` and sort `EstimatedVertiPaqBytes` largest first. Review `Unavailable` and `No size returned` rows before relying on the ranking. `Not measured` can mean a non-Import model or a mode the script could not confirm.
+5. Open `PowerBI-Discovery-SemanticModelSizes.csv` in the script folder (the default separator is `;`). Filter to `SizeStatus = Estimated` and sort `EstimatedVertiPaqBytes` largest first. Review `Unavailable` and `No size returned` rows before relying on the ranking. `Not measured` can mean a non-Import model or a mode the script could not confirm.
 
 The script rejects missing or inactive workspaces and does not have a model-name exclusion list. If an approved workspace contains system-generated models, leave those rows out of your sizing analysis.
 
